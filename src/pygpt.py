@@ -9,6 +9,9 @@ import datetime
 import threading
 
 
+t_sleep = 45
+
+
 class PyGPT:
     def __init__(self, session_token, timeout=120, bypass_node='https://gpt.pawan.krd', pro_account=False,
                  name="default"):
@@ -28,8 +31,9 @@ class PyGPT:
         self.filepath = f'{name}-PyGPT.json'
         self.load()
         asyncio.create_task(self.cleanup_conversations())
-        thread = threading.Thread(target=self.save_interval)
-        thread.start()
+        self.stop_thread = [False]
+        self.threadazzo = threading.Thread(target=self.save_interval)
+        self.threadazzo.start()
 
     def save(self):
         data = {
@@ -68,8 +72,8 @@ class PyGPT:
             self.pause_token_checks = False
 
     def save_interval(self):
-        while True:
-            time.sleep(60)
+        while not self.stop_thread[0] :
+            time.sleep(t_sleep)
             self.save()
 
     async def connect(self):
@@ -77,6 +81,10 @@ class PyGPT:
 
     async def disconnect(self):
         await self.socket.disconnect()
+        self.stop_thread[0] = True
+        print('Closing threads ...wait')
+        self.threadazzo.join()
+        print('[+] Thread exit')
 
     def on_connect(self):
         print('Connected to server')
