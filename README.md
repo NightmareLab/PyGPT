@@ -1,3 +1,14 @@
+## Note
+
+The project is a replacement to the official openai python module. The original project was archived, so here we'll try to keep it alive until we'll pass to a openai api key plan.
+
+
+<br />
+
+------
+
+Original project start from here:
+
 # ***:warning: __This repository is deprecated and no longer maintained!__***
 if you have a question about it you can join our Discord server.
 
