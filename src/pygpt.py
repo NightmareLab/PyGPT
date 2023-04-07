@@ -42,7 +42,11 @@ class PyGPT:
         for conversation in self.conversations:
             conversation['conversation_id'] = str(conversation['conversation_id'])
             conversation['parent_id'] = str(conversation['parent_id'])
-            conversation['last_active'] = conversation['last_active'].isoformat()
+            last_active = conversation['last_active']
+            if not isinstance(last_active, str) :
+              last_active = last_active.isoformat()
+
+            conversation['last_active'] = last_active
         with open(self.filepath, 'w') as f:
             json.dump(data, f, indent=4)
 

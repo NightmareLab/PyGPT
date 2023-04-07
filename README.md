@@ -7,7 +7,7 @@ The project is a replacement to the official openai python module. The original 
 
 ------
 
-Original project start from here:
+Original project starts from here:
 
 # ***:warning: __This repository is deprecated and no longer maintained!__***
 if you have a question about it you can join our Discord server.
