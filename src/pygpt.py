@@ -7,9 +7,13 @@ import asyncio
 import socketio
 import datetime
 import threading
+import re
+
 
 
 t_sleep = 45
+reg_date = "(\w{4}-\w{2}-\w{2})[A-z](\w.*)"
+datetime_format_clean = "%Y-%m-%d %H:%M:%S.%f"
 
 
 class PyGPT:
@@ -108,12 +112,31 @@ class PyGPT:
             self.pause_token_checks = False
             await asyncio.sleep(0.5)
 
-    async def cleanup_conversations(self):
+    async def cleanup_conversations(self, t_sleep=60):
+        
+        def check_date(last_active):
+            rets = None
+            last_active_str = str(last_active)
+            re_match = re.match(reg_date, last_active_str)
+            if re_match :
+                d1, d2 = re_match.groups()
+                rets = datetime.datetime.strptime("{} {}".format(d1, d2), datetime_format_clean)
+            return rets
+
         while True:
-            await asyncio.sleep(60)
+            await asyncio.sleep(t_sleep)
             now = datetime.datetime.now()
-            self.conversations = [c for c in self.conversations if
-                                  now - c['last_active'] < datetime.timedelta(minutes=2)]
+            output = []
+            for c in self.conversations :
+              last_active = c['last_active']
+              tmp_last_active = check_date(last_active)
+              if tmp_last_active != None :
+                last_active = tmp_last_active
+                c['last_active'] = last_active
+
+              if now - last_active < datetime.timedelta(minutes=2) :
+                output.append(c)
+            self.conversations = output
 
     def add_conversation(self, conv_id):
         conversation = {
